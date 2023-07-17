@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'GothamBlack';
+  src: local('GothamBlack'), url('./fonts/Gotham-Spotify-Font/Gotham-Black.otf') format('woff');
+}
+
+
+@layer base {
+
+  html,
+  body,
+  #root {
+    @apply h-full bg-backcolor text-white antialiased;
+    font-family: GothamBlack;
+  }
+
+  #root {
+    @apply flex flex-col
+  }
+
+  .wrapper {
+    height: calc(100% - theme('spacing.24'));
+    @apply flex
+  }
+}
