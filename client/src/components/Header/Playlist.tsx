@@ -3,6 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import spotifyWebApi, { spotifyWebApiUrl } from '../../spotify/webApi';
 import { removeSpotifyAuth, savePlaylist } from '../../redux/actions';
 import musicPlaceholder from '../images/music-placeholder.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   setToastList: Function,
@@ -11,9 +12,11 @@ interface Props {
 
 export default function Playlist(props: Props) {
   const { spotifyAuth, playlists } = useSelector((state: ApplState) => state.app, shallowEqual);
-  const dispatch = useDispatch();
   const [fetchDataTrigger, setFetchDataTrigger] = React.useState(0);
   const fetchDataIntervalId = React.useRef<NodeJS.Timer>();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const setFetchDataInterval = (interval: any) => {
     // Clear old interval
@@ -48,6 +51,7 @@ export default function Playlist(props: Props) {
             }
           ]))
           dispatch(removeSpotifyAuth({}));
+          navigate('/');
         }
       })
 

@@ -24,6 +24,7 @@ export default function Register({ handleAsync, setToastList }: Props) {
   const [form, updateForm] = React.useState<LoginForm>(defaultForm);
   const [passwordRefState, togglePassword] = React.useState<boolean>(false);
   const passwordRef = useRef<HTMLInputElement>(null);
+  
   const navigate = useNavigate();
 
   const googleLogin = useGoogleLogin({

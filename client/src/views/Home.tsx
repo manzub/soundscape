@@ -26,9 +26,9 @@ export default function Home(props: Props) {
 
   const quickLinks = [
     {
-      title: 'Recently Played',
+      title: 'Featured Playlists',
       imageSrc: 'https://misc.scdn.co/liked-songs/liked-songs-640.png',
-      linkTo: '#someDiv'
+      linkTo: '#featuredDiv'
     },
     {
       title: '2000\'s Hot Hits',
@@ -58,7 +58,7 @@ export default function Home(props: Props) {
           </React.Fragment>))}
         </div>
         <div className='mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-center justify-center gap-x-6 gap-y-4 mb-6 transition-all'>
-          {quickLinks.map((item, idx) => (<div onClick={() => document.querySelector(item.linkTo)?.scrollIntoView()} key={idx} className='flex cursor-pointer items-center gap-x-4 bg-dortbox group relative hover:bg-dortboxact rounded'>
+          {quickLinks.map((item, idx) => (<div onClick={() => document.querySelector(item.linkTo)?.scrollIntoView({ behavior: 'smooth' })} key={idx} className='flex cursor-pointer items-center gap-x-4 bg-dortbox group relative hover:bg-dortboxact rounded'>
             <img className='w-[5rem] h-[5rem]' alt="someimage" src={item.imageSrc} />
             <h4 className='text-[16px] font-bold p-4'>{item.title}</h4>
             <button className='w-12 h-12 absolute right-2 transition-opacity rounded-full flex items-center shadow-2xl justify-center opacity-0 group-hover:opacity-100 group-active:opacity-100'>

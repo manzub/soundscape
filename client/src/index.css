@@ -813,6 +813,10 @@ html,
   bottom: 0.5rem;
 }
 
+.-right-5 {
+  right: -1.25rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -839,6 +843,10 @@ html,
 
 .z-\[999\] {
   z-index: 999;
+}
+
+.z-0 {
+  z-index: 0;
 }
 
 .m-0 {
@@ -1129,6 +1137,22 @@ html,
   height: auto;
 }
 
+.h-24 {
+  height: 6rem;
+}
+
+.h-\[108px\] {
+  height: 108px;
+}
+
+.h-\[128px\] {
+  height: 128px;
+}
+
+.h-\[220px\] {
+  height: 220px;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1296,6 +1320,14 @@ html,
 
 .w-14 {
   width: 3.5rem;
+}
+
+.w-\[108px\] {
+  width: 108px;
+}
+
+.w-\[128px\] {
+  width: 128px;
 }
 
 .min-w-\[100vw\] {
@@ -1466,6 +1498,12 @@ html,
           transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.rotate-25 {
+  --tw-rotate: 25deg;
+  -webkit-transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+          transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .scale-100 {
   --tw-scale-x: 1;
   --tw-scale-y: 1;
@@ -1623,6 +1661,10 @@ html,
   gap: 1rem;
 }
 
+.gap-5 {
+  gap: 1.25rem;
+}
+
 .gap-x-3 {
   -webkit-column-gap: 0.75rem;
           column-gap: 0.75rem;
@@ -1645,6 +1687,11 @@ html,
 
 .gap-y-4 {
   row-gap: 1rem;
+}
+
+.gap-x-5 {
+  -webkit-column-gap: 1.25rem;
+          column-gap: 1.25rem;
 }
 
 .divide-x > :not([hidden]) ~ :not([hidden]) {
@@ -2437,6 +2484,26 @@ html,
 .bg-footer {
   --tw-bg-opacity: 1;
   background-color: rgb(24 24 24 / var(--tw-bg-opacity));
+}
+
+.bg-orangebox {
+  --tw-bg-opacity: 1;
+  background-color: rgb(186 93 7 / var(--tw-bg-opacity));
+}
+
+.bg-purplebox {
+  --tw-bg-opacity: 1;
+  background-color: rgb(141 103 171 / var(--tw-bg-opacity));
+}
+
+.bg-redbox {
+  --tw-bg-opacity: 1;
+  background-color: rgb(230 30 50 / var(--tw-bg-opacity));
+}
+
+.bg-green-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(56 142 60 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-60 {
@@ -4770,6 +4837,14 @@ html,
 .placeholder-shown\:border-t-red-500:placeholder-shown {
   --tw-border-opacity: 1;
   border-top-color: rgb(244 67 54 / var(--tw-border-opacity));
+}
+
+.hover\:h-24:hover {
+  height: 6rem;
+}
+
+.hover\:h-20:hover {
+  height: 5rem;
 }
 
 .hover\:scale-110:hover {

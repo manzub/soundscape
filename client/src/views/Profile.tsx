@@ -86,7 +86,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   return (
     <div>
-      <div style={{ marginTop: '-64px' }}>
+      <div style={{ marginTop: '-20px' }}>
         <div className="flex relative overflow-hidden max-w-none text-white pb-4" style={{ height: '30vh', minHeight: '340px', maxHeight: '400px' }}>
           <div className="self-end" style={{ height: '192px', width: '192px', minWidth: '192px', marginInlineEnd: '24px' }}>
             <div className="flex relative" style={{ height: 'inherit' }}>

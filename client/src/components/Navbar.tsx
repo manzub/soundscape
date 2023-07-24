@@ -6,20 +6,21 @@ import TopSearch from './Navbar/TopSearch';
 import LibFilter from './Navbar/LibFilter';
 
 interface Props {
-  user: IUser,
+  query: string, 
+  setSearchQuery: Function,
 }
 
-export default function Navbar({ user }: Props) {
+export default function Navbar(props: Props) {
 
   const searchRoute = useMatch("/search");
   
   const libRoute = useMatch("/collection");;
 
   return (
-    <nav className="h-[3.75rem] flex items-center justify-between px-8">
+    <nav className="h-[3.75rem] z-10 flex items-center justify-between px-8">
 
       <Navigation />
-      {searchRoute && (<TopSearch />)}
+      {searchRoute && (<TopSearch query={props.query} setSearchQuery={props.setSearchQuery} />)}
       {libRoute && (<LibFilter />)}
       <User />
     </nav>

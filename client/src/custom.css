@@ -586,3 +586,36 @@
     overflow-wrap: anywhere;
   }
 }
+
+.login {
+  display: grid;
+  background-color: black;
+  height: 100vh;
+  place-items: center;
+}
+
+.login > img {
+  height: 200px;
+}
+
+.spotify_lgn {
+  color: white;
+  text-decoration: none;
+  padding: 20px;
+  border-radius: 99px;
+  font-weight: 800;
+  background-color: #1db954;
+}
+
+.ios_lgn {
+  color: white;
+  text-decoration: none;
+  padding: 20px;
+  border-radius: 99px;
+  font-weight: 800;
+  background-color: #FA233C;
+}
+
+.spotify_lgn:disabled, .ios_lgn:disabled {
+  background-color: #88ae95;
+}

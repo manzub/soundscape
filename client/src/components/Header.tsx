@@ -4,7 +4,7 @@ import { Icon } from "./Icons";
 import Menu from './Header/Menu';
 import Playlist from './Header/Playlist';
 import DownloadApp from './Header/DownloadApp';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import spotifyLogin from '../spotify/login';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
@@ -18,12 +18,14 @@ interface Props {
 export default function Header(props: Props) {
   const { app, user } = useSelector(((state: ApplState) => ({ app: state.app, user: state.user })), shallowEqual);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
   const handleSpotifyButton = () => {
     if (app.spotifyAuth.access_token) {
       if (window.confirm('Do you want to disconnect spotify')) {
         dispatch(removeSpotifyAuth({}));
+        navigate('/');
       }
     } else spotifyLogin.loginWithSpotify();
   }
