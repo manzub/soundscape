@@ -22,6 +22,7 @@ type UserState = {
 
 interface IApp {
   spotifyAuth: { access_token?: string, expires_in?: string, token_type?: string },
+  appleMusicAuth: { loggedIn: boolean },
   playlists: Array<{ name: string, id: string, images: Array<{url:string}>, owner: string, source: string }>
 }
 

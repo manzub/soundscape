@@ -3,7 +3,8 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import spotifyWebApi, { spotifyWebApiUrl } from '../../spotify/webApi';
 import { removeSpotifyAuth, savePlaylist } from '../../redux/actions';
 import musicPlaceholder from '../images/music-placeholder.svg';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import appleMusicWebApi, { appleMusicWebApiUrl } from '../../applemusic/webApi';
 
 interface Props {
   setToastList: Function,
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export default function Playlist(props: Props) {
-  const { spotifyAuth, playlists } = useSelector((state: ApplState) => state.app, shallowEqual);
+  const { spotifyAuth, appleMusicAuth, playlists } = useSelector((state: ApplState) => state.app, shallowEqual);
   const [fetchDataTrigger, setFetchDataTrigger] = React.useState(0);
   const fetchDataIntervalId = React.useRef<NodeJS.Timer>();
 
@@ -55,6 +56,29 @@ export default function Playlist(props: Props) {
         }
       })
 
+    if (appleMusicAuth.loggedIn) {
+      appleMusicWebApi.fetchApi(`${appleMusicWebApiUrl}/me/library/playlists`)
+        .then(response => {
+          interface playlistProps { name: string, id: string };
+          const playlists = response.data.data.map(({ name, id }: playlistProps) => ({ name, id, images: [], owner: props.user.username, source: 'applemusic' }));
+
+          dispatch(savePlaylist(playlists));
+        }).catch(error => {
+          if (error?.response.status === 401) {
+            props.setToastList((list: Array<any>) => ([
+              ...list, {
+                id: 1,
+                title: 'Error',
+                description: 'AppleMusic Login Expired, connect AppleMusic again',
+                backgroundColor: '#d9534f'
+              }
+            ]))
+            // TODO: remove apple music dispatch(removeSpotifyAuth({}));
+            // navigate('/');
+          }
+        })
+    }
+
     // Clean up for unmount to prevent memory leak
     return () => clearInterval(fetchDataIntervalId.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,7 +94,7 @@ export default function Playlist(props: Props) {
       <ul>
         {playlists.map((item) => (
           <li className='mb-2' key={item.id}>
-            <a href="#s" className='text-link hover:text-white text-sm font-semibold'>
+            <NavLink to={`playlist/${item.source}/${item.id}`} className='text-link hover:text-white text-sm font-semibold'>
               <div className='flex gap-2 items-center justify-items-center'>
                 <img src={item.images.length > 0 ? item.images[0].url : musicPlaceholder} className="h-14 w-14 p-3 rounded-lg bg-gray-900 shadow-md" alt='playlist cover' />
                 <div>
@@ -78,7 +102,7 @@ export default function Playlist(props: Props) {
                   <p className='font-thin font-sans capitalize'>{item.source} . {item.owner}</p>
                 </div>
               </div>
-            </a>
+            </NavLink>
           </li>
         ))}
       </ul>

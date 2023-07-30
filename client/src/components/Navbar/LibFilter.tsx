@@ -3,6 +3,11 @@ import { NavLink } from 'react-router-dom';
 
 export default function LibFilter() {
 
+  function handleNav(e: React.MouseEvent, linkTo: string) {
+    e.preventDefault();
+    document.querySelector(linkTo)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <nav className='mr-auto ml-4 relative'>
       <ul className='flex gap-x-4'>
@@ -11,9 +16,9 @@ export default function LibFilter() {
             let styles = ["p-3 rounded"];
             if (isActive) styles.push("bg-topbutton p-3 rounded");
             return styles.join("");
-          }} to={"/collection"}>
+          }} onClick={(e) => handleNav(e, 'libPlaylists')} to={"/collection"}>
             <button className='font-semibold text-white active:bg-brenk leading-4 text-[15px] tracking-wide'>
-              Çalma Listeleri
+              Playlists
             </button>
           </NavLink>
         </li>
@@ -22,31 +27,9 @@ export default function LibFilter() {
             let styles = ["p-3 rounded"];
             if (isActive) styles.push("bg-topbutton p-3 rounded");
             return styles.join("");
-          }} to={"/collection/podcasts"}>
+          }} onClick={(e) => handleNav(e, 'libAlbums')} to={"/collection/albums"}>
             <button className='font-semibold text-white active:bg-brenk leading-4 text-[15px] tracking-wide'>
-              Podcast'ler
-            </button>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink className={(isActive) => {
-            let styles = ["p-3 rounded"];
-            if (isActive) styles.push("bg-topbutton p-3 rounded");
-            return styles.join("");
-          }} to={"/collection/sanatciler"}>
-            <button className='font-semibold text-white active:bg-brenk leading-4 text-[15px] tracking-wide'>
-              Sanatçılar
-            </button>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink className={(isActive) => {
-            let styles = ["p-3 rounded"];
-            if (isActive) styles.push("bg-topbutton p-3 rounded");
-            return styles.join("");
-          }} to={"/collection/albumler"}>
-            <button className='font-semibold text-white active:bg-brenk leading-4 text-[15px] tracking-wide'>
-              Albümler
+              Albums
             </button>
           </NavLink>
         </li>

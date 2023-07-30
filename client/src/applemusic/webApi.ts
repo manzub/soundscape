@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const appleMusicWebApiUrl = "https://api.music.apple.com/v1/";
+export const appleMusicWebApiUrl = "https://api.music.apple.com/v1";
 
 const appleMusicWebApi = {
   fetchApi: async (url: string) => {

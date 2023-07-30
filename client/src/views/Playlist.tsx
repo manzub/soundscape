@@ -5,44 +5,80 @@ import { ArrowsRightLeftIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
 import { connect } from "react-redux";
 import { SimplifiedPlaylist } from "spotify-types";
+import musicPlaceholder from '../components/images/music-placeholder.svg';
+import appleMusicWebApi, { appleMusicWebApiUrl } from "../applemusic/webApi";
 
 // todo: get playlist from spotify api
 
 interface Props {
   user: IUser,
   app: IApp,
-  setToastList: Function
+  setToastList: Function,
+  handleAsync: Function
 }
 
-function PlaylistItem({ user, app, setToastList }: Props) {
+function PlaylistItem({ user, app, setToastList, handleAsync }: Props) {
   const params = useParams();
+
+  const [asyncState, setInAsync] = React.useState<boolean>(false);
 
   const [item, setItem] = React.useState<SimplifiedPlaylist>();
 
   const access_token = app.spotifyAuth.access_token;
   const getPlaylist = useCallback(async () => {
-    spotifyWebApi.fetchApi(`${spotifyWebApiUrl}/playlists/${params.id}`, (access_token || ''))
-      .then(function (response) {
-        setItem(response.data);
-      }).catch(error => setToastList((list: Array<any>) => ([
-        ...list, {
-          id: 2,
-          title: 'Error',
-          description: 'Error occurred while connecting to spotify',
-          backgroundColor: '#d9534f'
-        }
-      ])))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (params.source === 'applemusic') {
+      appleMusicWebApi.fetchApi(`${appleMusicWebApiUrl}/catalog/uk/playlists/${params.id}`)
+        .then(function (response) {
+          console.log(response);
+          // TODO: applemusic
+        }).catch(error => setToastList((list: Array<any>) => ([
+          ...list, {
+            id: 2,
+            title: 'Error',
+            description: 'Error occurred while connecting to spotify',
+            backgroundColor: '#d9534f'
+          }
+        ])))
+    } else if (params.source === 'spotify') {
+      spotifyWebApi.fetchApi(`${spotifyWebApiUrl}/playlists/${params.id}`, (access_token || ''))
+        .then(function (response) {
+          setItem(response.data);
+        }).catch(error => setToastList((list: Array<any>) => ([
+          ...list, {
+            id: 2,
+            title: 'Error',
+            description: 'Error occurred while connecting to spotify',
+            backgroundColor: '#d9534f'
+          }
+        ])))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, access_token])
 
   useEffect(() => {
     getPlaylist();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  function convertTo() {
+    if (window.confirm('Are you sure you want to proceed. This might take a while')) {
+      handleAsync(!asyncState);
+
+      if (params.source === 'spotify') {
+        item?.tracks.items.forEach(function ({ track }) {
+          
+        })
+      }
+    }
+  }
+
+  console.log(item);
+
+
 
   return (<div className="body">
     <div className="body__info">
-      <img src={item?.images[0].url} alt="" />
+      <img src={(item?.images && item.images.length > 0) ? item?.images[0].url : musicPlaceholder} alt="" />
       <div className="body__infoText">
         <strong>PLAYLIST</strong>
         <h2>{item?.name}</h2>
@@ -53,7 +89,7 @@ function PlaylistItem({ user, app, setToastList }: Props) {
       <div className="body__icons">
         <PlayCircleIcon className="body__shuffle h-20 mr-4" />
         {/* TODO: conver to id */}
-        <ArrowsRightLeftIcon title="Convert To " className="h-16 hover:h-20" />
+        <ArrowsRightLeftIcon onClick={convertTo} title="Convert To " className="h-16 hover:h-20" />
       </div>
 
       {/* List of Songs */}

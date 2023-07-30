@@ -21,10 +21,11 @@ export function userReducer(state: IUser = initialUser.user, action: UserAction)
   return newState;
 }
 
-const initialState: IApp = { spotifyAuth: {}, playlists: [] }
+const initialState: IApp = { spotifyAuth: {}, appleMusicAuth: { loggedIn: false }, playlists: [] }
 export function appReducer(state = initialState, action: AppAction) {
   // Clone state object
   let newState = Object.assign({}, state);
+  // newState = initialState;
   switch (action.type) {
     case actionTypes.SPOTIFY_AUTH:
       const expiryDate = (Date.now() + action.payload.expires_in * 1000);
@@ -35,7 +36,7 @@ export function appReducer(state = initialState, action: AppAction) {
       newState = { ...state, spotifyAuth: initialState.spotifyAuth };
       break;
     case actionTypes.SAVE_PLAYLIST:
-      newState = { ...state, playlists: [ ...action.payload] }
+      newState = { ...state, playlists: [...action.payload] }
       break;
     case actionTypes.CLEAR_APP:
       newState = initialState;

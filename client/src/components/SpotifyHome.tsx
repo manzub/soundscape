@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import PlayBox from "../components/PlayBox";
-import Song from "../components/Song";
+import PlayBox from "./PlayBox";
+import Song from "./Song";
 import { connect, useDispatch } from "react-redux";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
 import { removeSpotifyAuth } from "../redux/actions";
@@ -44,8 +44,7 @@ function SpotifyHome({ user, app, setToastList }: Props) {
     urls.forEach(function (spotifyItem) {
       spotifyWebApi.fetchApi(spotifyItem.apiUrl, (app.spotifyAuth.access_token || ''))
         .then((response) => {
-          const apItems: Array<Playlist> = response.data.playlists.items;
-
+          const apItems: Array<Playlist> = response.data.playlists.items.map((item: Playlist) => ({...item, source:'spotify'}));
           setState({ ...items, [spotifyItem.name]: apItems });
         }).catch((error) => {
           if (error?.response.status === 401) {
@@ -73,24 +72,11 @@ function SpotifyHome({ user, app, setToastList }: Props) {
   }, [])
 
   return (<>
-    <div className='flex justify-between items-end mb-4'>
-      <PlayBox title={'Recently Played - Spotify'} />
-    </div>
-    <div className='grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6'>
-    </div>
-
     <div id="featuredDiv" className='flex justify-between items-end mb-4'>
       <PlayBox title={'Featured Playlists - Spotify'} />
     </div>
     <div className='grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6'>
-      {items?.featured.map((item, idx) => <Song item={item} key={idx} />)}
-    </div>
-
-    <div className='flex justify-between items-end mb-4'>
-      <PlayBox title={'2000\'s Hot Hits'} />
-    </div>
-    <div className='grid grid-cols-5 gap-x-6'>
-      {/* items go here */}
+      {items?.featured.map((item, idx) => (item != null && <Song item={item} key={idx} />))}
     </div>
   </>)
 }

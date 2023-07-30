@@ -5,7 +5,7 @@ export default function LoadingHud({ active, children }) {
   return (
     <LoadingOverlay
       active={active}
-      spinner={<BounceLoader />}
+      spinner={<BounceLoader color="white" />}
       text='Loading...'>
       {children}
     </LoadingOverlay>

@@ -984,6 +984,22 @@ html,
   margin-bottom: 1rem;
 }
 
+.mt-20 {
+  margin-top: 5rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mb-10 {
+  margin-bottom: 2.5rem;
+}
+
+.mb-14 {
+  margin-bottom: 3.5rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -1151,6 +1167,14 @@ html,
 
 .h-\[220px\] {
   height: 220px;
+}
+
+.h-\[296px\] {
+  height: 296px;
+}
+
+.h-44 {
+  height: 11rem;
 }
 
 .max-h-60 {
@@ -2522,6 +2546,10 @@ html,
   background-image: linear-gradient(to top right, var(--tw-gradient-stops));
 }
 
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
 .from-amber-600 {
   --tw-gradient-from: #ffb300 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(255 179 0 / 0) var(--tw-gradient-to-position);
@@ -2636,6 +2664,12 @@ html,
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.from-gra3 {
+  --tw-gradient-from: #501FF2 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(80 31 242 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .to-amber-400 {
   --tw-gradient-to: #ffca28 var(--tw-gradient-to-position);
 }
@@ -2710,6 +2744,10 @@ html,
 
 .to-yellow-400 {
   --tw-gradient-to: #ffee58 var(--tw-gradient-to-position);
+}
+
+.to-gra4 {
+  --tw-gradient-to: #867FE7 var(--tw-gradient-to-position);
 }
 
 .bg-clip-border {

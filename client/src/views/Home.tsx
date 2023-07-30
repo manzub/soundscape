@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Alert, Button } from "@material-tailwind/react";
 import hotHits2000 from '../components/images/hot-hits-image.jpeg';
 import { ArrowRightIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
-import SpotifyHome from "../components/SoptifyHome";
+import SpotifyHome from "../components/SpotifyHome";
+import AppleMusicHome from "../components/appleMusicHome";
 
 interface Props {
   user: IUser,
@@ -69,6 +70,7 @@ export default function Home(props: Props) {
       </div>
 
       <SpotifyHome setToastList={props.setToastList} />
+      <AppleMusicHome setToastList={props.setToastList} />
     </div>
   )
 }
