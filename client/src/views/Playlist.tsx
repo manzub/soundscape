@@ -1,28 +1,29 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useContext, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import './Playlist.css';
 import { ArrowsRightLeftIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { SimplifiedPlaylist } from "spotify-types";
 import musicPlaceholder from '../components/images/music-placeholder.svg';
 import appleMusicWebApi, { appleMusicWebApiUrl } from "../applemusic/webApi";
+import { UtilsContext } from "../utils/useContext";
 
 // todo: get playlist from spotify api
 
-interface Props {
-  user: IUser,
-  app: IApp,
-  setToastList: Function,
-  handleAsync: Function
-}
-
-function PlaylistItem({ user, app, setToastList, handleAsync }: Props) {
+function PlaylistItem() {
   const params = useParams();
+  const { handleAsync, handleToastList } = useContext(UtilsContext);
 
+  const { user, app } = useSelector((state: ApplState) => ({ user: state.user, app: state.app }));
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [asyncState, setInAsync] = React.useState<boolean>(false);
 
   const [item, setItem] = React.useState<SimplifiedPlaylist>();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [convertedTracks, setTracks] = React.useState<any[]>([]);
 
   const access_token = app.spotifyAuth.access_token;
   const getPlaylist = useCallback(async () => {
@@ -31,26 +32,20 @@ function PlaylistItem({ user, app, setToastList, handleAsync }: Props) {
         .then(function (response) {
           console.log(response);
           // TODO: applemusic
-        }).catch(error => setToastList((list: Array<any>) => ([
-          ...list, {
-            id: 2,
-            title: 'Error',
-            description: 'Error occurred while connecting to spotify',
-            backgroundColor: '#d9534f'
-          }
-        ])))
+        }).catch(error => handleToastList({
+          title: 'Error',
+          description: 'Error occurred while connecting to spotify',
+          backgroundColor: '#d9534f'
+        }))
     } else if (params.source === 'spotify') {
       spotifyWebApi.fetchApi(`${spotifyWebApiUrl}/playlists/${params.id}`, (access_token || ''))
         .then(function (response) {
           setItem(response.data);
-        }).catch(error => setToastList((list: Array<any>) => ([
-          ...list, {
-            id: 2,
-            title: 'Error',
-            description: 'Error occurred while connecting to spotify',
-            backgroundColor: '#d9534f'
-          }
-        ])))
+        }).catch(error => handleToastList({
+          title: 'Error',
+          description: 'Error occurred while connecting to spotify',
+          backgroundColor: '#d9534f'
+        }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, access_token])
@@ -60,19 +55,47 @@ function PlaylistItem({ user, app, setToastList, handleAsync }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function convertTo() {
+  // TODO: convert playlist
+  async function convertTo() {
     if (window.confirm('Are you sure you want to proceed. This might take a while')) {
       handleAsync(!asyncState);
 
       if (params.source === 'spotify') {
-        item?.tracks.items.forEach(function ({ track }) {
-          
+        var asyncFunc = new Promise<void>((resolve, reject) => {
+          item?.tracks.items.forEach(({ track }, index, array) => {
+            // search with track names, artists, and other needed params
+            const trackName = track?.name.split(" ").join("+");
+            appleMusicWebApi.fetchApi(`${appleMusicWebApiUrl}/catalog/uk/search?term=${trackName}&limit=1&types=songs`)
+              .then(function (response) {
+                console.log(response.data.results.songs.data);
+                // get the id. songs
+                const convertedTrack = response.data.results.songs.data[0];
+                // save the results to an array
+                // then create a playlist from the completed array.
+                setTracks(prev => ([...prev, { id: convertedTrack.id, type: convertedTrack.type }]))
+              }).catch(error => handleToastList({
+                title: 'Error',
+                description: 'Error occurred, could not find song',
+                backgroundColor: '#d9534f'
+              }))
+
+            // if last array item
+
+            if (index === array.length - 1) {
+              console.log(index);
+              // end execution of the promise.
+              resolve()
+            }
+          })
+        })
+
+        asyncFunc.then(() => {
+          handleAsync(false);
+          // do something after completed like create new playlist with these items
         })
       }
     }
   }
-
-  console.log(item);
 
 
 

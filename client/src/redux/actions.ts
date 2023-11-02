@@ -16,3 +16,5 @@ export const getUserProfile = (email: string) => async (dispatch: ThunkDispatch<
     dispatch({ type: actionTypes.GET_USER_PROFILE, payload: response.data })
   }
 }
+export const appleMusicLgn = () => ({ type: actionTypes.APPLE_MUSIC_LGN });
+export const appleMusicRemove = () => ({ type: actionTypes.APPLE_MUSIC_REMOVE });

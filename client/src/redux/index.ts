@@ -4,6 +4,7 @@ import thunk from "redux-thunk";
 
 const rootReducers = combineReducers({ user: userReducer, app: appReducer });
 
+// persist state to localstorage - increase longetivity of app state and fix reset on refresh.
 function persistLocal(state: any) {
   try{
     const serialisedState = JSON.stringify(state);
@@ -13,7 +14,7 @@ function persistLocal(state: any) {
   }
 }
 
-
+//extract app state from localstorage and parse as initial appstate.
 function extractLocal() {
   try{
     const serialisedState = localStorage.getItem('_uniqPersistantStateId');

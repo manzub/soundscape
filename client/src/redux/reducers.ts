@@ -41,7 +41,11 @@ export function appReducer(state = initialState, action: AppAction) {
     case actionTypes.CLEAR_APP:
       newState = initialState;
       break;
-    default:
+    case actionTypes.APPLE_MUSIC_LGN:
+      newState = { ...state, appleMusicAuth: { loggedIn: true } };
+      break;
+    case actionTypes.APPLE_MUSIC_REMOVE:
+      newState = { ...state, appleMusicAuth: { loggedIn: false } };
       break;
   }
   return newState

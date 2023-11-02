@@ -1,26 +1,22 @@
-import React, { useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
+import React, { useContext, useEffect } from "react";
+import { connect, useDispatch, useSelector } from "react-redux";
 import CollectionItem from "../components/CollectionItem";
 import { useNavigate } from "react-router-dom";
 import { removeSpotifyAuth } from "../redux/actions";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
 import appleMusicWebApi, { appleMusicWebApiUrl } from "../applemusic/webApi";
+import { UtilsContext } from "../utils/useContext";
 
-interface Props {
-  user: IUser,
-  app: IApp,
-  setToastList: Function
-}
-
-function Collection(props: Props) {
-  const { spotifyAuth, appleMusicAuth } = props.app;
+function Collection() {
+  const { handleToastList } = useContext(UtilsContext);
+  const app = useSelector((state: ApplState) => (state.app));
+  const { spotifyAuth, appleMusicAuth } = app;
 
   const [albumItems, setAlbumItems] = React.useState<any[]>([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  interface albumProps { id: string, dateAdded: string, name: string, artwork: string | undefined, source: string };
   useEffect(() => {
     spotifyWebApi.fetchApi(`${spotifyWebApiUrl}/me/albums`, (spotifyAuth.access_token || ''))
       .then(response => {
@@ -28,14 +24,11 @@ function Collection(props: Props) {
         setAlbumItems(prev => [...prev, ...albumItems]);
       }).catch(error => {
         if (error?.response.status === 401) {
-          props.setToastList((list: Array<any>) => ([
-            ...list, {
-              id: 1,
-              title: 'Error',
-              description: 'Spotify Login Expired, connect spotify again',
-              backgroundColor: '#d9534f'
-            }
-          ]))
+          handleToastList({
+            title: 'Error',
+            description: 'Spotify Login Expired, connect spotify again',
+            backgroundColor: '#d9534f'
+          })
           dispatch(removeSpotifyAuth({}));
           navigate('/');
         }
@@ -49,14 +42,11 @@ function Collection(props: Props) {
           setAlbumItems(prev => [...prev, ...albumItems]);
         }).catch(error => {
           if (error?.response.status === 401) {
-            props.setToastList((list: Array<any>) => ([
-              ...list, {
-                id: 1,
-                title: 'Error',
-                description: 'AppleMusic Login Expired, connect AppleMusic again',
-                backgroundColor: '#d9534f'
-              }
-            ]))
+            handleToastList({
+              title: 'Error',
+              description: 'AppleMusic Login Expired, connect AppleMusic again',
+              backgroundColor: '#d9534f'
+            })
             // TODO: remove apple music dispatch(removeSpotifyAuth({}));
             // navigate('/');
           }
@@ -70,7 +60,7 @@ function Collection(props: Props) {
   return (<div>
     <div id="libPlaylists" className=" mb-14">
       <h3 className='text-2xl text-white font-bold tracking-tight mb-4'>Your Playlists</h3>
-      <CollectionItem item={props.app.playlists} title="Saved Playlists" type="playlist" />
+      <CollectionItem item={app.playlists} title="Saved Playlists" type="playlist" />
     </div>
 
     <div id="libAlbums" className=" mb-14">

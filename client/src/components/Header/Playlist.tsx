@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import spotifyWebApi, { spotifyWebApiUrl } from '../../spotify/webApi';
 import { removeSpotifyAuth, savePlaylist } from '../../redux/actions';
 import musicPlaceholder from '../images/music-placeholder.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 import appleMusicWebApi, { appleMusicWebApiUrl } from '../../applemusic/webApi';
+import { UtilsContext } from '../../utils/useContext';
 
 interface Props {
-  setToastList: Function,
   user: IUser
 }
 
 export default function Playlist(props: Props) {
+  const { handleToastList } = useContext(UtilsContext);
+
   const { spotifyAuth, appleMusicAuth, playlists } = useSelector((state: ApplState) => state.app, shallowEqual);
   const [fetchDataTrigger, setFetchDataTrigger] = React.useState(0);
   const fetchDataIntervalId = React.useRef<NodeJS.Timer>();
@@ -43,14 +45,11 @@ export default function Playlist(props: Props) {
         dispatch(savePlaylist(playlists));
       }).catch(error => {
         if (error?.response.status === 401) {
-          props.setToastList((list: Array<any>) => ([
-            ...list, {
-              id: 1,
-              title: 'Error',
-              description: 'Spotify Login Expired, connect spotify again',
-              backgroundColor: '#d9534f'
-            }
-          ]))
+          handleToastList({
+            title: 'Error',
+            description: 'Spotify Login Expired, connect spotify again',
+            backgroundColor: '#d9534f'
+          })
           dispatch(removeSpotifyAuth({}));
           navigate('/');
         }
@@ -65,14 +64,11 @@ export default function Playlist(props: Props) {
           dispatch(savePlaylist(playlists));
         }).catch(error => {
           if (error?.response.status === 401) {
-            props.setToastList((list: Array<any>) => ([
-              ...list, {
-                id: 1,
-                title: 'Error',
-                description: 'AppleMusic Login Expired, connect AppleMusic again',
-                backgroundColor: '#d9534f'
-              }
-            ]))
+            handleToastList({
+              title: 'Error',
+              description: 'AppleMusic Login Expired, connect AppleMusic again',
+              backgroundColor: '#d9534f'
+            })
             // TODO: remove apple music dispatch(removeSpotifyAuth({}));
             // navigate('/');
           }

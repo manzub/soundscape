@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import logo from './images/logo.svg';
 import { Icon } from "./Icons";
 import Menu from './Header/Menu';
@@ -10,12 +10,8 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { removeSpotifyAuth } from '../redux/actions';
 
-interface Props {
-  setToastList: Function
-}
 
-
-export default function Header(props: Props) {
+export default function Header() {
   const { app, user } = useSelector(((state: ApplState) => ({ app: state.app, user: state.user })), shallowEqual);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -63,7 +59,7 @@ export default function Header(props: Props) {
         <div className="h-[1px] bg-active mt-5"></div>
       </nav>
       <nav className='px-6 pt-3 overflow-y-auto scrollbar-hide'>
-        <Playlist user={user} setToastList={props.setToastList} />
+        <Playlist user={user} />
       </nav>
       <span className='px-6 pt-3 '><DownloadApp /></span>
     </div>

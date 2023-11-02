@@ -9,8 +9,19 @@ import { Provider } from 'react-redux';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import store from './redux';
 import { ThemeProvider } from '@material-tailwind/react';
+import MusicProvider from './applemusic/musicKit';
 
 const clientId = process.env.REACT_APP_GG_CLIENTID || '';
+let musicInstance = null;
+
+let musicProvider = MusicProvider.sharedProvider();
+
+try {
+  musicProvider.configure();
+  musicInstance = musicProvider.getMusicInstance();
+} catch (error) {
+  console.log(error);
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,7 +32,7 @@ root.render(
       <GoogleOAuthProvider clientId={clientId}>
         <Provider store={store}>
           <BrowserRouter>
-            <App />
+            <App musicInstance={musicInstance} />
           </BrowserRouter>
         </Provider>
       </GoogleOAuthProvider>

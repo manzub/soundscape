@@ -1,22 +1,19 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import classNames from "classnames";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { backendUrl } from "../utils/backendApi";
-
-interface Props {
-  handleAsync: Function,
-  setToastList: Function
-}
-
+import { UtilsContext } from "../utils/useContext";
 interface LoginForm {
   username: string,
   email: string,
   password: string
 }
 
-export default function Register({ handleAsync, setToastList }: Props) {
+export default function Register() {
+  const { handleAsync, handleToastList } = useContext(UtilsContext);
+
   const [inAsync, setAsyncState] = React.useState<boolean>(false);
   const [ggToken, setCredentials] = React.useState<string>();
 
@@ -24,7 +21,7 @@ export default function Register({ handleAsync, setToastList }: Props) {
   const [form, updateForm] = React.useState<LoginForm>(defaultForm);
   const [passwordRefState, togglePassword] = React.useState<boolean>(false);
   const passwordRef = useRef<HTMLInputElement>(null);
-  
+
   const navigate = useNavigate();
 
   const googleLogin = useGoogleLogin({
@@ -45,30 +42,24 @@ export default function Register({ handleAsync, setToastList }: Props) {
 
     setAsyncState(true);
     // eslint-disable-next-line no-useless-escape
-    if(String(form.email).match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+    if (String(form.email).match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
       axios.post(`${backendUrl}/auth/create-new-user`, form).then(response => response.data).then((dataResponse: ResponseData) => {
         if (dataResponse.status === 1) {
-          setToastList((list: Array<any>) => ([
-            ...list, {
-              id: 1,
-              title: 'Success',
-              description: dataResponse.message,
-              backgroundColor: '#5cb85c'
-            }
-          ]));
+          handleToastList({
+            title: 'Success',
+            description: dataResponse.message,
+            backgroundColor: '#5cb85c'
+          })
           setTimeout(() => {
             setAsyncState(false);
             navigate('/')
           }, 2500);
         } else {
-          setToastList((list: Array<any>) => ([
-            ...list, {
-              id: 1,
-              title: 'Error',
-              description: dataResponse.message,
-              backgroundColor: '#d9534f'
-            }
-          ]));
+          handleToastList({
+            title: 'Error',
+            description: dataResponse.message,
+            backgroundColor: '#d9534f'
+          })
         }
       })
     }
@@ -76,7 +67,7 @@ export default function Register({ handleAsync, setToastList }: Props) {
     setTimeout(() => {
       setAsyncState(false);
     }, 2500);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

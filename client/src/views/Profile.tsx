@@ -1,6 +1,6 @@
 import { CheckIcon, ChevronUpDownIcon, InformationCircleIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { Alert, Button, Typography } from "@material-tailwind/react"
-import React, { useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 import userPlaceholder from '../components/images/user.png';
 import { Combobox, Transition } from "@headlessui/react";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
@@ -10,10 +10,13 @@ import { ConnectedProps, connect } from "react-redux";
 import { getUserProfile } from "../redux/actions";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
+import { UtilsContext } from "../utils/useContext";
 
 // TODO: fetch api when load 
 const Profile: React.FC<ProfileProps> = (props) => {
-  const { user, accessToken, setToastList, handleAsync } = props;
+  const { user, accessToken } = props;
+  const { handleAsync, handleToastList } = useContext(UtilsContext);
+
   const [inAsync, setAsyncState] = React.useState<boolean>(false);
   const [showForm, setFormState] = React.useState<boolean>(false);
 
@@ -36,26 +39,20 @@ const Profile: React.FC<ProfileProps> = (props) => {
     if (selected !== '') {
       axios.post(`${backendUrl}/me/profile/add-to-favorite-genres`, { email: user.email, genre: selected }).then(response => {
         if (response.data.status === 1) {
-          setToastList((list: Array<any>) => ([
-            ...list, {
-              id: 1,
-              title: 'Success',
-              description: response.data.message,
-              backgroundColor: '#5cb85c'
-            }
-          ]));
+          handleToastList({
+            title: 'Success',
+            description: response.data.message,
+            backgroundColor: '#5cb85c'
+          })
           props.getUserProfile((user.email || ''));
           setFormState(false)
           setSelected('');
         } else throw new Error(response.data.message);
-      }).catch(error => setToastList((list: Array<any>) => ([
-        ...list, {
-          id: 2,
-          title: 'Error',
-          description: 'Could not save item',
-          backgroundColor: '#d9534f'
-        }
-      ])))
+      }).catch(error => handleToastList({
+        title: 'Error',
+        description: 'Could not save item',
+        backgroundColor: '#d9534f'
+      }))
     }
   }
 
@@ -64,14 +61,11 @@ const Profile: React.FC<ProfileProps> = (props) => {
       if (accessToken !== '') {
         spotifyWebApi.fetchApi(`${spotifyWebApiUrl}/recommendations/available-genre-seeds`, (accessToken || '')).then(response => response.data).then(({ genres }: { genres: Array<string> }) => {
           setGenres(genres.filter(x => !user.profile?.preferences.genres.find(y => y === x)));
-        }).catch(error => setToastList((list: Array<any>) => ([
-          ...list, {
-            id: 2,
-            title: 'Error',
-            description: 'Error occurred while connecting to spotify',
-            backgroundColor: '#d9534f'
-          }
-        ])))
+        }).catch(error => handleToastList({
+          title: 'Error',
+          description: 'Error occurred while connecting to spotify',
+          backgroundColor: '#d9534f'
+        }))
       }
     }
     genres.length === 0 && getAvailableGenres();
@@ -175,13 +169,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
   )
 }
 
-interface Props {
-  handleAsync: Function,
-  setToastList: Function
-}
-
-const mapStateToProps = (state: ApplState, ownProps: Props) => ({
-  user: state.user, accessToken: state.app.spotifyAuth.access_token, ...ownProps
+const mapStateToProps = (state: ApplState) => ({
+  user: state.user, accessToken: state.app.spotifyAuth.access_token
 })
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<any, void, AnyAction>) => ({

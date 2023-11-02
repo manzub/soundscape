@@ -1,25 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import PlayBox from "./PlayBox";
 import Song from "./Song";
-import { connect, useDispatch } from "react-redux";
+import { connect, shallowEqual, useDispatch, useSelector } from "react-redux";
 import spotifyWebApi, { spotifyWebApiUrl } from "../spotify/webApi";
 import { removeSpotifyAuth } from "../redux/actions";
 import { Playlist } from "spotify-types";
 import { useNavigate } from "react-router-dom";
+import { UtilsContext } from "../utils/useContext";
 
-interface Props {
-  user: IUser,
-  app: IApp,
-  setToastList: Function
-}
+function SpotifyHome() {
+  const { handleToastList } = useContext(UtilsContext);
 
-function SpotifyHome({ user, app, setToastList }: Props) {
   const [fetchDataTrigger, setFetchDataTrigger] = React.useState(0);
   const fetchDataIntervalId = React.useRef<NodeJS.Timer>();
 
   interface PlayboxItems { featured: Array<Playlist> };
   const [items, setState] = React.useState<PlayboxItems>({ featured: [] });
 
+  const { app } = useSelector((state: ApplState) => ({ app: state.app }), shallowEqual);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -44,18 +42,15 @@ function SpotifyHome({ user, app, setToastList }: Props) {
     urls.forEach(function (spotifyItem) {
       spotifyWebApi.fetchApi(spotifyItem.apiUrl, (app.spotifyAuth.access_token || ''))
         .then((response) => {
-          const apItems: Array<Playlist> = response.data.playlists.items.map((item: Playlist) => ({...item, source:'spotify'}));
+          const apItems: Array<Playlist> = response.data.playlists.items.map((item: Playlist) => ({ ...item, source: 'spotify' }));
           setState({ ...items, [spotifyItem.name]: apItems });
         }).catch((error) => {
           if (error?.response.status === 401) {
-            setToastList((list: Array<any>) => ([
-              ...list, {
-                id: 1,
-                title: 'Error',
-                description: 'Spotify Login Expired, connect spotify again',
-                backgroundColor: '#d9534f'
-              }
-            ]))
+            handleToastList({
+              title: 'Error',
+              description: 'Spotify Login Expired, connect spotify again',
+              backgroundColor: '#d9534f'
+            })
             dispatch(removeSpotifyAuth({}));
             navigate('/');
           }

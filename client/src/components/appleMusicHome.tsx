@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { connect } from "react-redux"
+import React, { useContext, useEffect } from "react";
+import { connect, shallowEqual, useSelector } from "react-redux"
 import PlayBox from "./PlayBox";
 import Song from "./Song";
 import appleMusicWebApi, { appleMusicWebApiUrl } from "../applemusic/webApi";
+import { UtilsContext } from "../utils/useContext";
 
-interface Props {
-  user: IUser,
-  app: IApp,
-  setToastList: Function
-}
 
-function AppleMusicHome(props: Props) {
+function AppleMusicHome() {
+  const { handleToastList } = useContext(UtilsContext);
+
+  const { app } = useSelector((state: ApplState) => ({ app: state.app }), shallowEqual);
+
   const [fetchDataTrigger, setFetchDataTrigger] = React.useState(0);
   const fetchDataIntervalId = React.useRef<NodeJS.Timer>();
 
@@ -35,7 +35,7 @@ function AppleMusicHome(props: Props) {
   };
 
   useEffect(() => {
-    if (props.app.appleMusicAuth.loggedIn) {
+    if (app.appleMusicAuth.loggedIn) {
       const urls = [{ apiUrl: `${appleMusicWebApiUrl}/catalog/us/playlists?filter[storefront-chart]=us`, name: 'charts' }];
       urls.forEach(function (applemusicItem) {
         appleMusicWebApi.fetchApi(applemusicItem.apiUrl)
@@ -45,14 +45,11 @@ function AppleMusicHome(props: Props) {
             setState({ ...items, [applemusicItem.name]: apItems });
           }).catch((error) => {
             if (error?.response.status === 401) {
-              props.setToastList((list: Array<any>) => ([
-                ...list, {
-                  id: 1,
-                  title: 'Error',
-                  description: 'Spotify Login Expired, connect spotify again',
-                  backgroundColor: '#d9534f'
-                }
-              ]))
+              handleToastList({
+                title: 'Error',
+                description: 'AppleMusic Login Expired, connect again',
+                backgroundColor: '#d9534f'
+              })
               // dispatch(removeSpotifyAuth({}));
               // navigate('/');
             }

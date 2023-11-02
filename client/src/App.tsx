@@ -7,20 +7,17 @@ import Login from './views/Login';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import LoadingHud from './components/LoadingHud';
 import Register from './views/Register';
-import { saveSpotifyAuth } from './redux/actions';
+import { appleMusicLgn, saveSpotifyAuth } from './redux/actions';
 import Profile from './views/Profile';
 import Toast from './components/Toast/Toast';
 import Playlist from './views/Playlist';
 import spotifyLogin from './spotify/login';
 import SearchPage from './views/Search';
 import Collection from './views/Collection';
+import { UtilsContext } from './utils/useContext';
 
-interface HomeState {
-  user: IUser,
-  app: IApp
-}
 
-function App() {
+function App(props: { musicInstance: any }) {
   const [toastList, setToastList] = React.useState<Array<any>>([]);
   const [inAsync, setAsyncState] = React.useState<boolean>(false);
   const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
@@ -28,13 +25,35 @@ function App() {
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [searching, setSearching] = React.useState<boolean>(false);
 
-  const { user, app }: HomeState = useSelector((state: ApplState) => ({ user: state.user, app: state.app }), shallowEqual);
+  const { user, app } = useSelector((state: ApplState) => ({ user: state.user, app: state.app }), shallowEqual);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  let musicInstance = props.musicInstance;
 
 
   const handleAsync = (state: boolean) => {
     setAsyncState(state);
+  }
+
+  const handleToastList = (props: { title: string, description: string, color: string }) => {
+    setToastList([
+      ...toastList, {
+        id: 1,
+        title: props.title,
+        description: props.description,
+        backgroundColor: props.color
+      }
+    ])
+  }
+
+  const handleSearchQuery = (query: string) => {
+    setSearchQuery(query);
+  }
+
+  async function authoriseMusicKit() {
+    await musicInstance.authorize();
+    dispatch(appleMusicLgn());
   }
 
   useEffect(() => {
@@ -48,6 +67,13 @@ function App() {
   useEffect(() => {
     if (user.loggedIn) setLoggedIn(!!user.loggedIn);
   }, [user]);
+
+  useEffect(() => {
+    if (musicInstance && musicInstance.isAuthorized) {
+      dispatch(appleMusicLgn()) // todo update state
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -66,9 +92,10 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+
   if (loggedIn) {
 
-    if (!app.spotifyAuth.access_token) {
+    if (!app.spotifyAuth.access_token || app.appleMusicAuth.loggedIn) {
       return (
         <LoadingHud active={inAsync}>
           <div className=''>
@@ -76,8 +103,8 @@ function App() {
               <img src="https://getheavy.com/wp-content/uploads/2019/12/spotify2019-830x350.jpg"
                 alt="" />
               <div className='lgn_btn flex flex-col gap-4'>
-                <button onClick={spotifyLogin.loginWithSpotify} disabled={!!app.spotifyAuth.access_token} className='spotify_lgn'>CONNECT SPOTIFY</button>
-                <button className='ios_lgn'>CONNECT AppleMusic</button>
+                <button onClick={spotifyLogin.loginWithSpotify} disabled={!!app.spotifyAuth.access_token} className='spotify_lgn'>Connect Spotify</button>
+                <button onClick={authoriseMusicKit} className='ios_lgn'>Connect AppleMusic</button>
               </div>
             </div>
           </div>
@@ -87,22 +114,24 @@ function App() {
 
     return (
       <LoadingHud active={inAsync}>
-        <div className="wrapper">
-          <Header setToastList={setToastList} />
-          <div className='flex-auto overflow-auto'>
-            <Navbar query={searchQuery} setSearchQuery={setSearchQuery} />
-            <div className='px-8 pt-5'>
-              <Routes>
-                <Route path='/' element={<Home user={user} setToastList={setToastList} />} />
-                <Route path='/search' element={<SearchPage setToastList={setToastList} query={searchQuery} searching={searching} setQuery={setSearchQuery} />} />
-                <Route path='/collection' element={<Collection setToastList={setToastList} />} />
-                <Route path='/playlist/:source/:id' element={<Playlist setToastList={setToastList} handleAsync={handleAsync} />} />
-                <Route path='/profile' element={<Profile handleAsync={handleAsync} setToastList={setToastList} />} />
-              </Routes>
+        <UtilsContext.Provider value={{ handleAsync, handleToastList, handleSearchQuery }}>
+          <div className="wrapper">
+            <Header />
+            <div className='flex-auto overflow-auto'>
+              <Navbar query={searchQuery} />
+              <div className='px-8 pt-5'>
+                <Routes>
+                  <Route path='/' element={<Home user={user} />} />
+                  <Route path='/search' element={<SearchPage query={searchQuery} searching={searching} />} />
+                  <Route path='/collection' element={<Collection />} />
+                  <Route path='/playlist/:source/:id' element={<Playlist />} />
+                  <Route path='/profile' element={<Profile />} />
+                </Routes>
+              </div>
             </div>
+            <Toast position="top-right" autoDelete={true} autoDeleteTime={2000} toastList={toastList} />
           </div>
-          <Toast position="top-right" autoDelete={true} autoDeleteTime={2000} toastList={toastList} />
-        </div>
+        </UtilsContext.Provider>
       </LoadingHud>
     );
   }
@@ -115,8 +144,8 @@ function App() {
         <div className='auth-body'>
           <div className='auth-center'>
             <Routes>
-              <Route path='/register' element={<Register handleAsync={handleAsync} setToastList={setToastList} />} />
-              <Route path='*' element={<Login handleAsync={handleAsync} />} />
+              <Route path='/register' element={<Register />} />
+              <Route path='*' element={<Login />} />
             </Routes>
           </div>
         </div>

@@ -6,9 +6,26 @@ import { ArrowRightIcon, InformationCircleIcon } from "@heroicons/react/24/solid
 import SpotifyHome from "../components/SpotifyHome";
 import AppleMusicHome from "../components/appleMusicHome";
 
+const quickLinks = [
+  {
+    title: 'Featured Playlists',
+    imageSrc: 'https://misc.scdn.co/liked-songs/liked-songs-640.png',
+    linkTo: '#featuredDiv'
+  },
+  {
+    title: '2000\'s Hot Hits',
+    imageSrc: hotHits2000,
+    linkTo: '#someDiv'
+  },
+  {
+    title: 'Recently Added',
+    imageSrc: 'https://misc.scdn.co/liked-songs/liked-songs-640.png',
+    linkTo: '#someDiv'
+  },
+]
+
 interface Props {
   user: IUser,
-  setToastList: Function
 }
 
 export default function Home(props: Props) {
@@ -24,24 +41,6 @@ export default function Home(props: Props) {
       }
     }
   }, [props.user.profile, alerts, navigate])
-
-  const quickLinks = [
-    {
-      title: 'Featured Playlists',
-      imageSrc: 'https://misc.scdn.co/liked-songs/liked-songs-640.png',
-      linkTo: '#featuredDiv'
-    },
-    {
-      title: '2000\'s Hot Hits',
-      imageSrc: hotHits2000,
-      linkTo: '#someDiv'
-    },
-    {
-      title: 'Recently Added',
-      imageSrc: 'https://misc.scdn.co/liked-songs/liked-songs-640.png',
-      linkTo: '#someDiv'
-    },
-  ]
 
   return (
     <div>
@@ -69,8 +68,8 @@ export default function Home(props: Props) {
         </div>
       </div>
 
-      <SpotifyHome setToastList={props.setToastList} />
-      <AppleMusicHome setToastList={props.setToastList} />
+      <SpotifyHome />
+      <AppleMusicHome />
     </div>
   )
 }

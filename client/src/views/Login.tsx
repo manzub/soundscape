@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react"
+import React, { useCallback, useContext, useEffect, useRef } from "react"
 import { NavLink } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import classNames from "classnames";
@@ -7,10 +7,7 @@ import { backendUrl } from "../utils/backendApi";
 import { useDispatch } from "react-redux";
 import { signInUser } from "../redux/actions";
 import Toast from "../components/Toast/Toast";
-
-interface Props {
-  handleAsync: Function
-}
+import { UtilsContext } from "../utils/useContext";
 
 interface LoginForm {
   emailusername: string,
@@ -18,7 +15,9 @@ interface LoginForm {
   usedOneTap: boolean
 }
 
-export default function Login({ handleAsync }: Props) {
+export default function Login() {
+  const { handleAsync, handleToastList } = useContext(UtilsContext);
+
   const [inAsync, setAsyncState] = React.useState<boolean>(false);
   const [ggToken, setCredentials] = React.useState<string>();
 
@@ -71,7 +70,7 @@ export default function Login({ handleAsync }: Props) {
         }, 2500);
       }
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -87,7 +86,7 @@ export default function Login({ handleAsync }: Props) {
 
   useEffect(() => {
     handleAsync(inAsync);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inAsync])
 
   return (
